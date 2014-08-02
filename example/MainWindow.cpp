@@ -34,10 +34,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
-  connect(ui->toolWindowManager, SIGNAL(toolWindowVisibilityChanged(QWidget*,bool)),
-          this, SLOT(toolWindowVisibilityChanged(QWidget*,bool)));
+  connect(ui->paneWidget , SIGNAL(widgetVisibilityChanged(QWidget*,bool)),
+          this, SLOT(widgetVisibilityChanged(QWidget*,bool)));
 
-  QList<QPushButton*> toolWindows;
+
+
+  QList<QPushButton*> widgets;
   for(int i = 0; i < 6; i++) {
     QPushButton* b1 = new QPushButton(QString("tool%1").arg(i + 1));
     b1->setWindowTitle(b1->text());
@@ -46,20 +48,20 @@ MainWindow::MainWindow(QWidget *parent) :
     action->setData(i);
     action->setCheckable(true);
     action->setChecked(true);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(toolWindowActionToggled(bool)));
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(widgetActionToggled(bool)));
     actions << action;
-    toolWindows << b1;
+    widgets << b1;
   }
-  ui->toolWindowManager->addToolWindow(toolWindows[0], ToolWindowManager::EmptySpace);
-  ui->toolWindowManager->addToolWindow(toolWindows[1], ToolWindowManager::LastUsedArea);
-  ui->toolWindowManager->addToolWindow(toolWindows[2], ToolWindowManager::LastUsedArea);
-  ui->toolWindowManager->addToolWindow(toolWindows[3],
-      ToolWindowManager::AreaReference(ToolWindowManager::LeftOf,
-                                       ui->toolWindowManager->areaOf(toolWindows[2])));
-  ui->toolWindowManager->addToolWindow(toolWindows[4], ToolWindowManager::LastUsedArea);
-  ui->toolWindowManager->addToolWindow(toolWindows[5],
-      ToolWindowManager::AreaReference(ToolWindowManager::TopOf,
-                                       ui->toolWindowManager->areaOf(toolWindows[4])));
+  ui->paneWidget->addWidget(widgets[0], PaneWidget::InEmptySpace);
+  ui->paneWidget->addWidget(widgets[1], PaneWidget::InLastUsedArea);
+  ui->paneWidget->addWidget(widgets[2], PaneWidget::InLastUsedArea);
+  ui->paneWidget->addWidget(widgets[3],
+      PaneWidget::AreaPointer(PaneWidget::LeftOf,
+                                       ui->paneWidget->areaOf(widgets[2])));
+  ui->paneWidget->addWidget(widgets[4], PaneWidget::InLastUsedArea);
+  ui->paneWidget->addWidget(widgets[5],
+      PaneWidget::AreaPointer(PaneWidget::TopOf,
+                                       ui->paneWidget->areaOf(widgets[4])));
 
 
   resize(600, 400);
@@ -70,17 +72,17 @@ MainWindow::~MainWindow() {
   delete ui;
 }
 
-void MainWindow::toolWindowActionToggled(bool state) {
+void MainWindow::widgetActionToggled(bool state) {
   int index = static_cast<QAction*>(sender())->data().toInt();
-  QWidget* toolWindow = ui->toolWindowManager->toolWindows()[index];
-  ui->toolWindowManager->moveToolWindow(toolWindow, state ?
-                                          ToolWindowManager::LastUsedArea :
-                                          ToolWindowManager::NoArea);
+  QWidget* widget = ui->paneWidget->widgets()[index];
+  ui->paneWidget->moveWidget(widget, state ?
+                                          PaneWidget::InLastUsedArea :
+                                          PaneWidget::NoArea);
 
 }
 
-void MainWindow::toolWindowVisibilityChanged(QWidget *toolWindow, bool visible) {
-  int index = ui->toolWindowManager->toolWindows().indexOf(toolWindow);
+void MainWindow::widgetVisibilityChanged(QWidget *widget, bool visible) {
+  int index = ui->paneWidget->widgets().indexOf(widget);
   actions[index]->blockSignals(true);
   actions[index]->setChecked(visible);
   actions[index]->blockSignals(false);
@@ -88,19 +90,19 @@ void MainWindow::toolWindowVisibilityChanged(QWidget *toolWindow, bool visible) 
 
 void MainWindow::on_actionSaveState_triggered() {
   QSettings settings;
-  settings.setValue("toolWindowManagerState", ui->toolWindowManager->saveState());
+  settings.setValue("PaneWidgetState", ui->paneWidget->saveState());
   settings.setValue("geometry", saveGeometry());
 }
 
 void MainWindow::on_actionRestoreState_triggered() {
   QSettings settings;
   restoreGeometry(settings.value("geometry").toByteArray());
-  ui->toolWindowManager->restoreState(settings.value("toolWindowManagerState"));
+  ui->paneWidget->restoreState(settings.value("PaneWidgetState"));
 }
 
 void MainWindow::on_actionClearState_triggered() {
   QSettings settings;
   settings.remove("geometry");
-  settings.remove("toolWindowManagerState");
+  settings.remove("PaneWidgetState");
   QApplication::quit();
 }

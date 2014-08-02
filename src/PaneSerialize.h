@@ -22,43 +22,33 @@
  * SOFTWARE.
  *
  */
-#ifndef TOOLWINDOWMANAGERWRAPPER_H
-#define TOOLWINDOWMANAGERWRAPPER_H
+#ifndef PaneSerialize_H
+#define PaneSerialize_H
 
 #include <QWidget>
 #include <QVariantMap>
 
-class ToolWindowManager;
 
-/*!
- * \brief The ToolWindowManagerWrapper class is used by ToolWindowManager to wrap its content.
- * One wrapper is a direct child of the manager and contains tool windows that are inside its window.
- * All other wrappers are top level floating windows that contain detached tool windows.
- *
- */
-class ToolWindowManagerWrapper : public QWidget {
+class PaneWidget;
+class PaneSerialize : public QWidget {
   Q_OBJECT
 public:
-  //! Creates new wrapper.
-  explicit ToolWindowManagerWrapper(ToolWindowManager* manager);
-  //! Removes the wrapper.
-  virtual ~ToolWindowManagerWrapper();
+
+  explicit PaneSerialize(PaneWidget* manager);
+  virtual ~PaneSerialize();
 
 protected:
-  //! Reimplemented to register hiding of contained tool windows when user closes the floating window.
+  //! Reimplemented to register hiding of contained widgets when user closes the floating window.
   virtual void closeEvent(QCloseEvent *);
 
 private:
-  ToolWindowManager* m_manager;
+  PaneWidget* mPaneWidget;
 
-  //dump content's layout to variable
   QVariantMap saveState();
-
-  //construct layout based on given dump
   void restoreState(const QVariantMap& data);
 
-  friend class ToolWindowManager;
+  friend class PaneWidget;
 
 };
 
-#endif // TOOLWINDOWMANAGERWRAPPER_H
+#endif // PaneSerialize_H

@@ -22,40 +22,40 @@
  * SOFTWARE.
  *
  */
-#include "ToolWindowManagerWrapper.h"
-#include "ToolWindowManager.h"
-#include "ToolWindowManagerArea.h"
+#include "PaneSerialize.h"
+#include "PaneWidget.h"
+#include "Pane.h"
 #include <QVBoxLayout>
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QDebug>
 #include <QApplication>
 
-ToolWindowManagerWrapper::ToolWindowManagerWrapper(ToolWindowManager *manager) :
+PaneSerialize::PaneSerialize(PaneWidget *manager) :
   QWidget(manager)
-, m_manager(manager)
+, mPaneWidget(manager)
 {
   setWindowFlags(windowFlags() | Qt::Tool);
   setWindowTitle(" ");
 
   QVBoxLayout* mainLayout = new QVBoxLayout(this);
   mainLayout->setContentsMargins(0, 0, 0, 0);
-  m_manager->m_wrappers << this;
+  mPaneWidget->m_wrappers << this;
 }
 
-ToolWindowManagerWrapper::~ToolWindowManagerWrapper() {
-  m_manager->m_wrappers.removeOne(this);
+PaneSerialize::~PaneSerialize() {
+  mPaneWidget->m_wrappers.removeOne(this);
 }
 
-void ToolWindowManagerWrapper::closeEvent(QCloseEvent *) {
-  QList<QWidget*> toolWindows;
-  foreach(ToolWindowManagerArea* tabWidget, findChildren<ToolWindowManagerArea*>()) {
-    toolWindows << tabWidget->toolWindows();
+void PaneSerialize::closeEvent(QCloseEvent *) {
+  QList<QWidget*> widgets;
+  foreach(Pane* tabWidget, findChildren<Pane*>()) {
+    widgets << tabWidget->widgets();
   }
-  m_manager->moveToolWindows(toolWindows, ToolWindowManager::NoArea);
+  mPaneWidget->moveWidgets(widgets, PaneWidget::NoArea);
 }
 
-QVariantMap ToolWindowManagerWrapper::saveState() {
+QVariantMap PaneSerialize::saveState() {
   if (layout()->count() > 1) {
     qWarning("too many children for wrapper");
     return QVariantMap();
@@ -68,9 +68,9 @@ QVariantMap ToolWindowManagerWrapper::saveState() {
   result["geometry"] = saveGeometry();
   QSplitter* splitter = findChild<QSplitter*>();
   if (splitter) {
-    result["splitter"] = m_manager->saveSplitterState(splitter);
+    result["splitter"] = mPaneWidget->saveSplitterState(splitter);
   } else {
-    ToolWindowManagerArea* area = findChild<ToolWindowManagerArea*>();
+    Pane* area = findChild<Pane*>();
     if (area) {
       result["area"] = area->saveState();
     } else if (layout()->count() > 0) {
@@ -81,16 +81,16 @@ QVariantMap ToolWindowManagerWrapper::saveState() {
   return result;
 }
 
-void ToolWindowManagerWrapper::restoreState(const QVariantMap &data) {
+void PaneSerialize::restoreState(const QVariantMap &data) {
   restoreGeometry(data["geometry"].toByteArray());
   if (layout()->count() > 0) {
     qWarning("wrapper is not empty");
     return;
   }
   if (data.contains("splitter")) {
-    layout()->addWidget(m_manager->restoreSplitterState(data["splitter"].toMap()));
+    layout()->addWidget(mPaneWidget->restoreSplitterState(data["splitter"].toMap()));
   } else if (data.contains("area")) {
-    ToolWindowManagerArea* area = m_manager->createArea();
+    Pane* area = mPaneWidget->createArea();
     area->restoreState(data["area"].toMap());
     layout()->addWidget(area);
   }

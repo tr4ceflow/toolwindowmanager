@@ -11,18 +11,19 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = ToolWindowManager
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -std=c++11
 
 INCLUDEPATH += ../src
 
 SOURCES += main.cpp\
   MainWindow.cpp \
-  ../src/ToolWindowManager.cpp \
-    ../src/ToolWindowManagerArea.cpp \
-    ../src/ToolWindowManagerWrapper.cpp
+    ../src/PaneSerialize.cpp \
+    ../src/Pane.cpp \
+    ../src/PaneWidget.cpp
 
 HEADERS  += MainWindow.h \
-  ../src/ToolWindowManager.h \
-    ../src/ToolWindowManagerArea.h \
-    ../src/ToolWindowManagerWrapper.h
+    ../src/PaneSerialize.h \
+    ../src/Pane.h \
+    ../src/PaneWidget.h
 
 FORMS    += MainWindow.ui

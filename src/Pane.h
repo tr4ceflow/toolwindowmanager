@@ -22,40 +22,40 @@
  * SOFTWARE.
  *
  */
-#ifndef TOOLWINDOWMANAGERAREA_H
-#define TOOLWINDOWMANAGERAREA_H
+#ifndef Pane_H
+#define Pane_H
 
 #include <QTabWidget>
 #include <QVariantMap>
 
-class ToolWindowManager;
+class PaneWidget;
 
 /*!
- * \brief The ToolWindowManagerArea class is a tab widget used to store tool windows.
+ * \brief The Pane class is a tab widget used to store widgets.
  * It implements dragging of its tab or the whole tab widget.
  */
-class ToolWindowManagerArea : public QTabWidget {
+class Pane : public QTabWidget {
   Q_OBJECT
 public:
   //! Creates new area.
-  explicit ToolWindowManagerArea(ToolWindowManager* manager, QWidget *parent = 0);
+  explicit Pane(PaneWidget* manager, QWidget *parent = 0);
   //! Destroys the area.
-  virtual ~ToolWindowManagerArea();
+  virtual ~Pane();
 
   /*!
-   * Add \a toolWindow to this area.
+   * Add \a widget to this area.
    */
-  void addToolWindow(QWidget* toolWindow);
+  void addWidget(QWidget* widget);
 
   /*!
-   * Add \a toolWindows to this area.
+   * Add \a widgets to this area.
    */
-  void addToolWindows(const QList<QWidget*>& toolWindows);
+  void addWidgets(const QList<QWidget*>& widgets);
 
   /*!
-   * Returns a list of all tool windows in this area.
+   * Returns a list of all widgets in this area.
    */
-  QList<QWidget*> toolWindows();
+  QList<QWidget*> widgets();
 
 protected:
   //! Reimplemented from QTabWidget::mousePressEvent.
@@ -68,7 +68,7 @@ protected:
   virtual bool eventFilter(QObject *object, QEvent *event);
 
 private:
-  ToolWindowManager* m_manager;
+  PaneWidget* mPaneWidget;
   bool m_dragCanStart; // indicates that user has started mouse movement on QTabWidget
                        // that can be considered as dragging it if the cursor will leave
                        // its area
@@ -83,9 +83,9 @@ private:
   //check if mouse left tab widget area so that dragging should start
   void check_mouse_move();
 
-  friend class ToolWindowManager;
-  friend class ToolWindowManagerWrapper;
+  friend class PaneWidget;
+  friend class PaneSerialize;
 
 };
 
-#endif // TOOLWINDOWMANAGERAREA_H
+#endif // Pane_H

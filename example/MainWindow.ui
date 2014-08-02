@@ -28,7 +28,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="ToolWindowManager" name="toolWindowManager" native="true"/>
+     <widget class="PaneWidget" name="paneWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -38,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuToolWindows">
@@ -77,9 +77,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>ToolWindowManager</class>
+   <class>PaneWidget</class>
    <extends>QWidget</extends>
-   <header>ToolWindowManager.h</header>
+   <header>PaneWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

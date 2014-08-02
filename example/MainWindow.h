@@ -43,8 +43,8 @@ private:
   QList<QAction*> actions;
 
 private slots:
-  void toolWindowActionToggled(bool state);
-  void toolWindowVisibilityChanged(QWidget* toolWindow, bool visible);
+  void widgetActionToggled(bool state);
+  void widgetVisibilityChanged(QWidget* widget, bool visible);
   void on_actionSaveState_triggered();
   void on_actionRestoreState_triggered();
   void on_actionClearState_triggered();
